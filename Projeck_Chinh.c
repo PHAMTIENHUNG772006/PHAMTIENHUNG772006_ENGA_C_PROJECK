@@ -19,7 +19,7 @@ struct Product{
 struct Product products[100];
 struct Category category[MAX_CATEGORY];
 int numberProduct = 0;
-int numberCategory = 5;
+int numberCategory = 0;
 void menuAdmin();
 void menuCategory();
 void menuProduct();
@@ -183,14 +183,12 @@ void addCategory() {
     }
     printf("\nDanh sach danh muc da day, khong the them moi!\n");
 }
-
 void loadCategoryFromFile() {
     FILE *file = fopen("category.txt", "r");
     if (file == NULL) {
         printf("\nLoi Khong the mo file!\n");
         return;
     }
-
     int index = 0;
     while (fscanf(file, "%[^,],%[^\n]\n", category[index].CategoryId, category[index].CategoryName) == 2) {
         index++;
@@ -199,7 +197,6 @@ void loadCategoryFromFile() {
     fclose(file);
     printf("\nDanh muc da duoc tai len file.\n");
 }
-
 void saveCategoryToFile() {
     FILE *file = fopen("category.txt", "w");
     if (file == NULL) {
@@ -213,7 +210,6 @@ void saveCategoryToFile() {
     }
     fclose(file);
 }
-
 void editCategory() {
     char idedit[30];
     int found = 0;
@@ -242,7 +238,6 @@ void editCategory() {
         saveCategoryToFile();
     }
 }
-
 void deleteCategory(){
 	char idDelet[30];
 	int found = 0;
