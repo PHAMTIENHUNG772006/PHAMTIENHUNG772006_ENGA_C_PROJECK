@@ -140,6 +140,10 @@ void addCategory() {
                 while (getchar() != '\n'); 
                 fgets(category[i].CategoryId, sizeof(category[i].CategoryId), stdin);
                 category[i].CategoryId[strcspn(category[i].CategoryId, "\n")] = '\0';
+                if(strlen(category[i].CategoryId ) == 0){
+                	printf("ID danh muc ban nhap rong..!\n");
+                	return;
+				}
                 if (strlen(category[i].CategoryId) > 10) {
                     printf("ID danh muc qua dai, vui long nhap lai (max 10 ky tu).\n");
                 } else {
@@ -157,21 +161,28 @@ void addCategory() {
                 printf("Ten danh muc (max 20 ky tu): ");
                 fgets(category[i].CategoryName, sizeof(category[i].CategoryName), stdin);
                 category[i].CategoryName[strcspn(category[i].CategoryName, "\n")] = '\0';
+                if(strlen(category[i].CategoryName ) == 0){
+                	printf("Thong tin danh muc ban nhap rong..!\n");
+                	return;
+				}
                 if (strlen(category[i].CategoryName) > 20) {
                     printf("Ten danh muc qua dai, vui long nhap lai (max 20 ky tu).\n");
                 } else {
                     validName = 1;
                 }
             } while (!validName);
-
+			for (int j = 0; j < i; j++) {
+                if (strcmp(category[i].CategoryName, category[j].CategoryName) == 0) {
+                    printf("ID danh muc da ton tai!\n");
+                    return;
+                }
+            }
             printf("Them danh muc thanh cong!\n");
-            saveCategoryToFile();
             return;
         }
     }
     printf("\nDanh sach danh muc da day, khong the them moi!\n");
 }
-
 
 void loadCategoryFromFile() {
     FILE *file = fopen("category.txt", "r");
@@ -275,7 +286,6 @@ void deleteCategory(){
         break;
         }
     }
-    saveCategoryToFile();
     printCategory();
   }
   else{
@@ -289,39 +299,35 @@ void toupperCase(char *category) {
     }
 }
 
-void searchCategory(){
-	char a[30];
-	int found = 0;
-	printf("\tMoi ban nhap ten danh muc muon tim: ");
-	while(getchar() != '\n');
-	fgets(a, sizeof(a), stdin);
-	a[strcspn(a, "\n")] = '\0';
-	toupperCase(a);
-	for(int i = 0; i < 10; i++){
-		char temp[30];
-		strcpy(temp, category[i].CategoryName);
-		toupperCase(temp);
-		if(strcmp(a, temp) == 0){
-			found = 1;
-			printf("\tDa tim thay !\n");
-			printf("\t|-------------------|----------------|\n");
-    		printf("\t| Ma danh muc       |  Ten danh muc  |\n"); 
-    		printf("\t|-------------------|----------------|\n");
-    			for (int j = i; j < 9 ; j++) {
-        			if (strlen(category[i].CategoryId) > 0) {
-            			printf("\t| %-13s     |    %-12s|\n", 
-                   		category[i].CategoryId, 
-                   		category[i].CategoryName);
-           	printf("\t|-------------------|----------------|\n");
-			break;
-          }
-      }
-	}
-  }
-      if(!found) {
-      	printf("\tKhong tim thay!\n");
-	}
+void searchCategory() {
+    char a[30];
+    int found = 0;
+    printf("Moi ban nhap ten danh muc muon tim: ");
+    while(getchar() != '\n');  
+    fgets(a, sizeof(a), stdin);
+    a[strcspn(a, "\n")] = '\0';  
+    toupperCase(a);  
+    for (int i = 0; i < 10; i++) {
+        char temp[30];
+        strcpy(temp, category[i].CategoryName);
+        toupperCase(temp);
+        if (strcmp(a, temp) == 0) {
+            found = 1;
+            printf("\tDa tim thay !\n");
+            printf("\t|-------------------|----------------|\n");
+            printf("\t| Ma danh muc       |  Ten danh muc  |\n"); 
+            printf("\t|-------------------|----------------|\n");
+            printf("\t| %-13s     |    %-12s|\n", category[i].CategoryId, category[i].CategoryName);
+            printf("\t|-------------------|----------------|\n");
+            break; 
+        }
+    }
+
+    if (!found) {
+        printf("Khong tim thay san pham can tim!\n");
+    }
 }
+
 void arrangeCategory() {
     int choice;
     do{
@@ -373,8 +379,9 @@ void arrangeCategory() {
 // ham menu danh muc
 void menuCategory() {
     int choice;
+    loadCategoryFromFile();
     do {
-        printf("****QUAN LY DANH MUC****\n");
+        printf("*****QUAN LY DANH MUC*****\n");
         printf("===========================\n");
         printf("[1]. Hien thi danh sach danh muc\n");
         printf("[2]. Them danh muc moi\n");
@@ -400,9 +407,11 @@ void menuCategory() {
                 break;
             case 3:
             	editCategory();
+            	saveCategoryToFile();
             	break;
             case 4:
             	deleteCategory();
+            	saveCategoryToFile();
             	break;
             case 5:
             	searchCategory();
@@ -420,7 +429,7 @@ void menuCategory() {
 void menuProduct() {
     int choice;
     do {
-        printf("PRODUCT MANAGEMENT MENU\n");
+        printf("*****QUAN LI SAN PHAM*****\n");
 		printf("===========================\n");
         printf("[1]. Hien thi thong tin san pham\n");
         printf("[2]. Nhap thong tin san pham\n");
